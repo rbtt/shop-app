@@ -1,20 +1,47 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { composeWithDevTools } from 'redux-devtools-extension'
+import { createStore, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import productsReducer from './store/reducers/products'
+import cartReducer from './store/reducers/cart'
+import orderReducer from './store/reducers/orders'
+
+import ShopNavigator from './navigation/ShopNavigator';
+import * as Font from 'expo-font'
+import AppLoading from 'expo-app-loading'
+import { useState } from 'react';
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+  })
+}
+
+const rootReducer = combineReducers({
+  products: productsReducer,
+  cart: cartReducer,
+  orders: orderReducer
+})
+export type RootState = ReturnType<typeof store.getState>
+
+const store = createStore(rootReducer, composeWithDevTools())
+export type AppDispatch = typeof store.dispatch
+
 
 export default function App() {
+  const [fontLoaded, setFontLoaded] = useState(false)
+  if (!fontLoaded) {
+    return <AppLoading
+      startAsync={fetchFonts}
+      onError={(err) => console.warn(err)}
+      onFinish={() => setFontLoaded(true)}
+    />
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <ShopNavigator />
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
