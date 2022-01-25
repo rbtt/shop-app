@@ -2,6 +2,7 @@ import Product from "../../models/product"
 import CartItem from "../../models/cart-item"
 import { CartActions } from "../actions/cart"
 import { OrderActions } from "../actions/orders"
+import { ProductActions } from "../actions/products"
 
 const initialState: {
     items: {
@@ -78,6 +79,18 @@ export default (
             }
         case OrderActions.addOrder:
             return initialState
+        case ProductActions.deleteProduct:
+            if (!state.items[action.pid!]) {
+                return state
+            }
+            const updatedItems = { ...state.items }
+            const itemTotal = state.items[action.pid!].sum
+            delete updatedItems[action.pid!]
+            return {
+                ...state,
+                items: updatedItems,
+                totalAmount: state.totalAmount - itemTotal
+            }
     }
     return state
 }

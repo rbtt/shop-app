@@ -2,18 +2,18 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, StyleSheet, Image, Button, TouchableOpacity, TouchableNativeFeedback, Platform } from 'react-native'
 import Product from '../../models/product'
 import Colors from '../../constants/Colors';
+import Card from '../UI/Card';
 
 const ProductItem: React.FC<{
     product: Product,
-    onViewDetail?: () => void,
-    onAddToCart?: () => void
-}> = ({ product, onViewDetail, onAddToCart }) => {
+    onSelect?: () => void
+}> = ({ product, onSelect, children }) => {
 
     let TouchableComponent = TouchableOpacity as any
     if (Platform.OS === 'android') TouchableComponent = TouchableNativeFeedback
     return (
-        <View style={styles.product}>
-            <TouchableComponent onPress={onViewDetail} useForeground >
+        <Card style={styles.product}>
+            <TouchableComponent onPress={onSelect} useForeground >
                 <View>
                     <View style={styles.imageContainer}>
                         <Image
@@ -26,25 +26,17 @@ const ProductItem: React.FC<{
                         <Text style={styles.price}>${product.price.toFixed(2)}</Text>
                     </View>
                     <View style={styles.actions}>
-                        <Button title='View Details' onPress={onViewDetail as any} color={Colors.accent} />
-                        <Button title='Add to Cart' onPress={onAddToCart as any} color={Colors.primary} />
+                        {children}
                     </View>
                     <StatusBar style='auto' />
                 </View>
             </TouchableComponent>
-        </View>
+        </Card>
     )
 }
 
 const styles = StyleSheet.create({
     product: {
-        shadowColor: 'black',
-        shadowOpacity: 0.26,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 5, // for android(shadow doesn't work)
-        borderRadius: 10,
-        backgroundColor: 'white',
         height: 300,
         margin: 20,
         overflow: 'hidden'

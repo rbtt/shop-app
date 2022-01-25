@@ -14,9 +14,11 @@ declare global {
 }
 
 export type RootStackParamList = {
-  ProductsOverview: NavigatorScreenParams<RootTabParamList> | undefined;
-  Modal: undefined;
-  NotFound: undefined;
+  ProductDetails: undefined;
+  ProductsOverview: undefined;
+  CartScreen: undefined;
+  UserProducts: undefined;
+  EditProducts: { productId?: string }
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -25,8 +27,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type RootTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  tab1: undefined
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

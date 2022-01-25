@@ -7,6 +7,7 @@ import ProductDetails from '../screens/shop/ProductDetails';
 import CartScreen from '../screens/shop/CartScreen';
 import OrdersScreen from '../screens/shop/OrdersScreen';
 import UserProductsScreen from '../screens/user/UserProductsScreen';
+import EditProductsScreen from '../screens/user/EditProductsScreen';
 
 import Colors from '../constants/Colors';
 import { OverflowMenuProvider } from 'react-navigation-header-buttons'
@@ -14,8 +15,9 @@ import HeaderButton from '../components/UI/HeaderButton'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons'
+import { RootStackParamList } from '../types';
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator<RootStackParamList>()
 const Drawer = createDrawerNavigator()
 
 const defaultHeaderOptions = {
@@ -114,7 +116,7 @@ const AdminNavigator = () => {
                     return {
                         ...defaultHeaderOptions,
                         headerTitleAlign: 'center',
-                        title: 'User Products',
+                        title: 'Your Products',
                         headerLeft: () => {
                             return <HeaderButtons HeaderButtonComponent={HeaderButton}>
                                 <Item
@@ -124,7 +126,28 @@ const AdminNavigator = () => {
                                     buttonStyle={{ paddingLeft: 0 }}
                                 />
                             </HeaderButtons>
+                        },
+                        headerRight: () => {
+                            return <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                                <Item
+                                    title='Add'
+                                    iconName={Platform.OS === 'android' ? 'md-create' : 'ios-create'}
+                                    onPress={() => { navigation.navigate('EditProducts', {}) }}
+                                    buttonStyle={{ paddingLeft: 0 }}
+                                />
+                            </HeaderButtons>
                         }
+                    }
+
+                }}
+            />
+            <Stack.Screen
+                name='EditProducts'
+                component={EditProductsScreen}
+                options={({ navigation }) => {
+                    return {
+                        ...defaultHeaderOptions,
+                        headerTitleAlign: 'center',                        
                     }
 
                 }}
@@ -192,11 +215,11 @@ const OrdersNavigator = () => {
                 }}
             />
             <Drawer.Screen
-                name='User Products'
+                name='Admin'
                 component={AdminNavigator}
                 options={{
                     ...defaultHeaderOptions,
-                    title: 'User Products',
+                    title: 'Your Products',
                     headerTitleAlign: 'center',
                     headerShown: false,
                     drawerIcon: ({ color, size, focused }) => {
