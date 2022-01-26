@@ -1,4 +1,3 @@
-import { CartItemIf } from '../../components/shop/CartItem'
 import { OrderActions } from '../actions/orders'
 import Order from '../../models/order'
 import { addOrder } from '../actions/orders'
