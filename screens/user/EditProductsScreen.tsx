@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useReducer } from 'react';
-import { View, StyleSheet, ScrollView, Platform, Alert, KeyboardAvoidingView } from 'react-native';
+import { useEffect, useCallback, useReducer, useState } from 'react';
+import { Text, View, StyleSheet, ScrollView, Platform, Alert, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../App';
 import { RootStackScreenProps } from '../../types';
@@ -8,6 +8,7 @@ import HeaderButton from '../../components/UI/HeaderButton'
 import Product from '../../models/product';
 import { createProduct, updateProduct } from '../../store/actions/products';
 import Input from '../../components/UI/Input'
+import Colors from '../../constants/Colors';
 
 export interface StateKeys {
     title: string;
@@ -24,7 +25,13 @@ type Actions = {
 
 
 const formReducer = (
-    state: { inputValues: { [key: string]: string }, inputValidities: { [key: string]: boolean }, formIsValid: boolean },
+    state: {
+        inputValues: {
+            [key: string]: string
+        },
+        inputValidities: { [key: string]: boolean },
+        formIsValid: boolean
+    },
     action: Actions
 ) => {
     if (action.type === 'UPDATE') {
@@ -51,6 +58,8 @@ const formReducer = (
 
 const EditProductsScreen = ({ route, navigation }: RootStackScreenProps<'EditProducts'>) => {
     const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<any>()
 
     let editingProduct: Product | undefined;
     if (route.params.productId) {
@@ -75,34 +84,49 @@ const EditProductsScreen = ({ route, navigation }: RootStackScreenProps<'EditPro
         formIsValid: editingProduct ? true : false
     })
 
-    const submitHandler = useCallback(() => {
-        console.log('FormState: \n', formState.inputValues.title, formState.inputValues.imageUrl, parseFloat(formState.inputValues.price), formState.inputValues.description)
+    useEffect(() => {
+        if (error) {
+            Alert.alert('An error occurred!', error, [{ text: 'Okay' }])
+        }
+        return () => {
+            setError(null)
+        }
+    }, [error])
 
+    const submitHandler = useCallback(async () => {
         if (!formState.formIsValid) {
             Alert.alert('Wrong Input', 'Please fill all the fields correctly.', [{ text: 'Okay' }])
             return
         }
-        if (route.params.productId) {
-            dispatch(updateProduct(
-                route.params.productId,
-                formState.inputValues.title,
-                formState.inputValues.imageUrl,
-                parseFloat(formState.inputValues.price),
-                formState.inputValues.description
-            ))
-            console.log('Updated')
+        setError(null)
+        setIsLoading(true)
+        try {
+            if (route.params.productId) {
+                await dispatch(updateProduct(
+                    route.params.productId,
+                    formState.inputValues.title,
+                    formState.inputValues.imageUrl,
+                    parseFloat(formState.inputValues.price),
+                    formState.inputValues.description
+                ))
+                console.log('Updated')
+            } else {
+                await dispatch(createProduct(
+                    formState.inputValues.title,
+                    formState.inputValues.imageUrl,
+                    parseFloat(formState.inputValues.price),
+                    formState.inputValues.description
+                ))
+                console.log('Created New')
+            }
             navigation.goBack()
-        } else {
-            dispatch(createProduct(
-                formState.inputValues.title,
-                formState.inputValues.imageUrl,
-                parseFloat(formState.inputValues.price),
-                formState.inputValues.description
-            ))
-            console.log('Created New')
-            navigation.goBack()
+        } catch (err: any) {
+            setError(err.message)
         }
+
+        setIsLoading(false)
     }, [dispatch, route.params.productId, formState])
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => {
@@ -132,6 +156,13 @@ const EditProductsScreen = ({ route, navigation }: RootStackScreenProps<'EditPro
         })
     }, [formDispatch])
 
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+            </View>
+        )
+    }
 
     return (
         <KeyboardAvoidingView
@@ -140,6 +171,8 @@ const EditProductsScreen = ({ route, navigation }: RootStackScreenProps<'EditPro
         >
             <ScrollView style={styles.screen}>
                 <View style={styles.form}>
+                    <Text>ID: {editingProduct?.id}</Text>
+                    <Text>OWNER ID: {editingProduct?.ownerId}</Text>
                     <Input
                         id='title'
                         label='Title'

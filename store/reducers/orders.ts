@@ -1,6 +1,23 @@
 import { OrderActions } from '../actions/orders'
 import Order from '../../models/order'
-import { addOrder } from '../actions/orders'
+import { CartItemIf } from '../../components/shop/CartItem'
+
+type OrderAction = {
+    type: OrderActions,
+    orderData: {
+        id: string,
+        items: CartItemIf[],
+        amount: number,
+        date: Date
+    },
+    ordersData: {
+        [key: string]: {
+            cartItems: CartItemIf[],
+            date: Date,
+            totalAmount: number
+        }
+    }
+}
 
 const initialState: {
     orders: Order[]
@@ -8,18 +25,32 @@ const initialState: {
     orders: []
 }
 
-export default (state = initialState, action: ReturnType<typeof addOrder>) => {
+export default (state = initialState, action: OrderAction) => {
     switch (action.type) {
         case OrderActions.addOrder:
             const newOrder = new Order(
-                (Math.floor(Math.random() * 1000000) + 1).toString(),
+                action.orderData.id,
                 action.orderData.items,
                 action.orderData.amount,
-                new Date()
+                action.orderData.date
             )
             return {
                 ...state,
                 orders: state.orders.concat(newOrder)
+            }
+        case OrderActions.fetchOrders:
+            let fetchedOrders = []
+            for (let key in action.ordersData) {
+                fetchedOrders.push(new Order(
+                    key,
+                    action.ordersData[key].cartItems,
+                    action.ordersData[key].totalAmount,
+                    action.ordersData[key].date
+                ))
+            }
+            return {
+                ...state,
+                orders: fetchedOrders
             }
     }
 

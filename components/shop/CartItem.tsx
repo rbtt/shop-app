@@ -22,10 +22,10 @@ const CartItem: React.FC<{
     return (
         <View style={styles.cartItem}>
             <View style={styles.itemData}>
-                <Text style={styles.qty}>{props.cartItem.quantity}x </Text><Text style={styles.mainText}>{props.cartItem.productTitle}</Text>
+                <Text style={styles.qty}>{props.cartItem.quantity}x </Text><Text style={styles.mainText} numberOfLines={1}>{props.cartItem.productTitle}</Text>
             </View>
             <View style={styles.itemData}>
-                <Text style={styles.mainText}>${props.cartItem.productPrice.toFixed(2)}</Text>
+                <Text style={styles.mainText} numberOfLines={1}>${props.cartItem.productPrice.toFixed(2)}</Text>
                 {props.deleteable &&
                     <TouchableComponent onPress={props.onRemove} style={styles.deleteButton}>
                         <Ionicons
@@ -40,20 +40,23 @@ const CartItem: React.FC<{
     )
 }
 
+// TODO better alignment
 const styles = StyleSheet.create({
     cartItem: {
+        width: '100%',
         padding: 10,
         backgroundColor: 'white',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginHorizontal: 20
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginHorizontal: 20,
     },
     deleteButton: {
         marginLeft: 20
     },
     itemData: {
         flexDirection: 'row',
-        alignItems: 'center'
+        width: '70%'
     },
     qty: {
         fontFamily: 'open-sans-bold',
@@ -62,7 +65,8 @@ const styles = StyleSheet.create({
     },
     mainText: {
         fontFamily: 'open-sans-bold',
-        fontSize: 16
+        fontSize: 16,
+
     }
 })
 

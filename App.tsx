@@ -1,5 +1,6 @@
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import ReduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 import productsReducer from './store/reducers/products'
 import cartReducer from './store/reducers/cart'
@@ -24,7 +25,7 @@ const rootReducer = combineReducers({
 })
 export type RootState = ReturnType<typeof store.getState>
 
-const store = createStore(rootReducer, composeWithDevTools())
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
 export type AppDispatch = typeof store.dispatch
 
 

@@ -1,6 +1,6 @@
 import PRODUCTS from '../../data/dummy-data'
 import Product from '../../models/product'
-import { updateProduct, createProduct, deleteProduct, ProductActions } from '../actions/products'
+import { ProductActions } from '../actions/products'
 
 export const initialState = {
     availableProducts: PRODUCTS,
@@ -11,14 +11,21 @@ export default function (state = initialState,
     action: {
         type: ProductActions
         pid?: string
-        payload?: {
+        payload: {
+            id: string
             title: string
             imageUrl: string
             price: number
             description: string
-        }
+        } | any
     }): typeof initialState {
     switch (action.type) {
+        case ProductActions.fetchProducts:
+            return {
+                availableProducts: action.payload as Product[],
+                userProducts: action.payload.filter((prod: any) => prod.ownerId === 'u1') as Product[]
+
+            }
         case ProductActions.deleteProduct:
             return {
                 ...state,
@@ -58,7 +65,7 @@ export default function (state = initialState,
         case ProductActions.createProduct:
             if (action.payload) {
                 const newProduct = new Product(
-                    new Date().toISOString(),
+                    action.payload.id,
                     'u1',
                     action.payload.title,
                     action.payload.imageUrl,
