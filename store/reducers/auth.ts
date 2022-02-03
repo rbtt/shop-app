@@ -15,6 +15,13 @@ export default (state = initialState, action: any) => {
         token: action.token,
         userId: action.userId,
       }
+    case 'AUTH':
+      return {
+        token: action.payload.token,
+        userId: action.payload.userId,
+      }
+    case 'LOGOUT':
+      return initialState
     default:
       return state
   }

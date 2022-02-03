@@ -1,5 +1,9 @@
-import { Platform } from 'react-native'
-import { NavigationContainer, NavigationProp } from '@react-navigation/native'
+import { Button, Platform, View, Text } from 'react-native'
+import {
+  NavigationContainer,
+  NavigationProp,
+  useNavigation,
+} from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import ProductsOverviewScreen from '../screens/shop/ProductsOverviewScreen'
@@ -9,14 +13,24 @@ import OrdersScreen from '../screens/shop/OrdersScreen'
 import UserProductsScreen from '../screens/user/UserProductsScreen'
 import EditProductsScreen from '../screens/user/EditProductsScreen'
 import AuthScreen from '../screens/user/AuthScreen'
+import StartupScreen from '../screens/StartScreen'
 
 import Colors from '../constants/Colors'
 import { OverflowMenuProvider } from 'react-navigation-header-buttons'
 import HeaderButton from '../components/UI/HeaderButton'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import {
+  createDrawerNavigator,
+  DrawerContent,
+  DrawerItem,
+  DrawerNavigationProp,
+} from '@react-navigation/drawer'
 import { Ionicons } from '@expo/vector-icons'
 import { RootStackParamList } from '../types'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../store/actions/auth'
+import { useCallback, useEffect } from 'react'
+import { RootState } from '../App'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Drawer = createDrawerNavigator()
@@ -169,15 +183,38 @@ const AdminNavigator = () => {
 }
 
 const AuthNavigator = () => {
+  const navigation = useNavigation()
+  const isAuth = useSelector((state: RootState) => !!state.auth.token)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if (!isAuth) {
+      // console.log('AuthNavigator re-rendering')
+      dispatch(logout())
+      navigation.navigate('StartupScreen')
+    }
+  }, [isAuth])
   return (
-    <Stack.Navigator initialRouteName='AuthScreen'>
+    <Stack.Navigator initialRouteName='StartupScreen'>
+      <Stack.Screen
+        name='StartupScreen'
+        component={StartupScreen}
+        options={{
+          ...defaultHeaderOptions,
+          title: 'Loading..',
+          headerTitleAlign: 'center',
+          // headerShown: false
+        }}
+      />
       <Stack.Screen
         name='AuthScreen'
         component={AuthScreen}
         options={{
+          // headerShown: false,
           ...defaultHeaderOptions,
           title: 'Authenticate',
           headerTitleAlign: 'center',
+
+          headerLeft: () => <View />,
         }}
       />
       <Stack.Screen
@@ -193,8 +230,37 @@ const AuthNavigator = () => {
 }
 
 const OrdersNavigator = () => {
+  const dispatch = useDispatch()
   return (
     <Drawer.Navigator
+      drawerContent={(props) => {
+        // console.log(props)
+        return (
+          <View style={{ flex: 1 }}>
+            <DrawerContent
+              descriptors={props.descriptors}
+              navigation={props.navigation}
+              state={props.state}
+            />
+            <DrawerItem
+              label='Logout'
+              onPress={() => {
+                dispatch(logout())
+                props.navigation.navigate('StartupScreen')
+              }}
+              icon={(props) => {
+                return <Ionicons name='exit' size={props.size} color={props.color} />
+              }}
+              activeTintColor={Colors.primary}
+              // inactiveTintColor={Colors.primary}
+              pressColor={Colors.primary}
+              pressOpacity={0.6}
+
+              // labelStyle={{ fontSize: 16, marginLeft: 0 }}
+            />
+          </View>
+        )
+      }}
       screenOptions={({ navigation }) => {
         return {
           // headerRight: (navInfo) => {

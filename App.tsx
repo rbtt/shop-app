@@ -12,6 +12,7 @@ import ShopNavigator from './navigation/ShopNavigator'
 import * as Font from 'expo-font'
 import AppLoading from 'expo-app-loading'
 import { useState } from 'react'
+import { LogBox } from 'react-native'
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -42,7 +43,7 @@ export default function App() {
       />
     )
   }
-
+  LogBox.ignoreLogs(['Setting a timer'])
   return (
     <Provider store={store}>
       <ShopNavigator />
