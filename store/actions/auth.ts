@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const apiKey = 'AIzaSyDpGho1xsV7d1YfLIveYyaAYeEA9BbX2k8'
+const apiKey = process.env.API_KEY
 let timer: NodeJS.Timeout
 
 export const signin = (email: string, password: string) => {
