@@ -68,7 +68,8 @@ export default function (
           action.payload.title,
           action.payload.imageUrl,
           action.payload.description,
-          action.payload.price
+          action.payload.price,
+          action.payload.ownerPushToken
         )
         let updatedUserProducts = [...state.userProducts]
         updatedUserProducts[userIndex] = updatedProduct
@@ -88,7 +89,8 @@ export default function (
           action.payload.title,
           action.payload.imageUrl,
           action.payload.description,
-          action.payload.price
+          action.payload.price,
+          action.payload.ownerPushToken
         )
         return {
           ...state,

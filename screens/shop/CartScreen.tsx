@@ -25,6 +25,7 @@ const CartScreen = () => {
         quantity: state.cart.items[key].quantity,
         sum: state.cart.items[key].sum,
         totalAmount: 0,
+        ownerPushToken: state.cart.items[key].ownerPushToken
       })
     }
     return transformedCartItems.sort((a, b) => (a.productId > b.productId ? 1 : -1))

@@ -1,5 +1,6 @@
 import { ThunkDispatch } from 'redux-thunk'
 import Product from '../../models/product'
+import * as Notifications from 'expo-notifications'
 
 export enum ProductActions {
   deleteProduct = 'DELETE_PRODUCT',
@@ -15,6 +16,7 @@ type FirebaseResponse = {
     description: string
     price: number
     ownerId: string
+    ownerPushToken: string
   }
 }
 
@@ -37,7 +39,8 @@ export const fetchProducts = () => {
           data[key].title,
           data[key].imageUrl,
           data[key].description,
-          data[key].price
+          data[key].price,
+          data[key].ownerPushToken
         )
       )
     }
@@ -72,7 +75,19 @@ export const createProduct = (
   description: string
 ) => {
   return async (dispatch: any, getState: any) => {
-    // any async code can be executed
+    // getting permissions and push token
+    let pushToken
+    const allowed = await Notifications.getPermissionsAsync()
+    if (!allowed) {
+      const data = await Notifications.requestPermissionsAsync()
+      if (!data.granted) {
+        pushToken = null
+        console.log('Notification Permissions Denied!')
+      }
+    }
+    pushToken = (await Notifications.getExpoPushTokenAsync()).data
+
+    // storing product to firebase
     const token = getState().auth.token
     const userId = getState().auth.userId
     const response = await fetch(
@@ -88,13 +103,23 @@ export const createProduct = (
           price,
           description,
           ownerId: userId,
+          ownerPushToken: pushToken,
         }),
       }
     )
     const data = await response.json()
+
     dispatch({
       type: ProductActions.createProduct,
-      payload: { id: data.name, title, imageUrl, price, description, ownerid: userId },
+      payload: {
+        id: data.name,
+        title,
+        imageUrl,
+        price,
+        description,
+        ownerid: userId,
+        pushToken,
+      },
     })
   }
 }

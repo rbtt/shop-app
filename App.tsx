@@ -14,6 +14,18 @@ import AppLoading from 'expo-app-loading'
 import { useState } from 'react'
 import { LogBox } from 'react-native'
 
+import * as Notifications from 'expo-notifications'
+
+Notifications.setNotificationHandler({
+  handleNotification: async() => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true
+    }
+  }
+})
+
 const fetchFonts = () => {
   return Font.loadAsync({
     'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),

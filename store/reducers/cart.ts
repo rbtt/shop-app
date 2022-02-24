@@ -24,6 +24,7 @@ export default (
         const addedProduct = action.product
         const prodPrice = addedProduct.price
         const prodTitle = addedProduct.title
+        const ownerPushToken = addedProduct.ownerPushToken
 
         if (state.items[addedProduct.id]) {
           // already have the item in card
@@ -31,7 +32,8 @@ export default (
             state.items[addedProduct.id].quantity + 1,
             prodPrice,
             prodTitle,
-            state.items[addedProduct.id].sum + prodPrice
+            state.items[addedProduct.id].sum + prodPrice,
+            ownerPushToken
           )
           return {
             ...state,
@@ -42,7 +44,7 @@ export default (
             totalAmount: state.totalAmount + prodPrice,
           }
         } else {
-          const newCartItem = new CartItem(1, prodPrice, prodTitle, prodPrice)
+          const newCartItem = new CartItem(1, prodPrice, prodTitle, prodPrice,ownerPushToken)
           return {
             ...state,
             items: {
@@ -64,7 +66,8 @@ export default (
             selectedCartItem.quantity - 1,
             selectedCartItem.productPrice,
             selectedCartItem.productTitle,
-            selectedCartItem.sum - selectedCartItem.productPrice
+            selectedCartItem.sum - selectedCartItem.productPrice,
+            selectedCartItem.ownerPushToken
           )
           updatedCartItems = { ...state.items, [action.pid]: updatedCartItem }
         } else {

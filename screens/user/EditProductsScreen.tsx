@@ -192,6 +192,7 @@ const EditProductsScreen = ({
             <Text>(dev)</Text>
             <Text>ID: {editingProduct?.id}</Text>
             <Text>OWNER ID: {editingProduct?.ownerId}</Text>
+            <Text>Push Token: {editingProduct?.ownerPushToken}</Text>
           </View>
           <Input
             id='title'

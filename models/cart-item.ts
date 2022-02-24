@@ -3,7 +3,8 @@ class CartItem {
     public quantity: number,
     public productPrice: number,
     public productTitle: string,
-    public sum: number
+    public sum: number,
+    public ownerPushToken: string
   ) {}
 }
 

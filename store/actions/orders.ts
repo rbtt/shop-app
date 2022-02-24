@@ -1,4 +1,5 @@
 import { CartItemIf } from '../../components/shop/CartItem'
+import * as Notifications from 'expo-notifications'
 
 export enum OrderActions {
   addOrder = 'ADD_ORDER',
@@ -63,5 +64,22 @@ export const addOrder = (cartItems: CartItemIf[], totalAmount: number) => {
         date,
       },
     })
+
+    for (let item of cartItems) {
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          host: 'exp.host',
+          accept: 'application/json',
+          'accept-encoding': 'gzip, deflate',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: item.ownerPushToken,
+          title: `New Order for your item`,
+          body: `${item.quantity}X ${item.productTitle} ordered`,
+        }),
+      })
+    }
   }
 }

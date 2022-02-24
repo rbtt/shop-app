@@ -9,6 +9,7 @@ export interface CartItemIf {
     productPrice: number,
     quantity: number,
     sum: number,
+    ownerPushToken: string
 }
 
 const CartItem: React.FC<{
